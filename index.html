@@ -1,1 +1,93 @@
-<html><h1>hiii all</h1></html>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>I LOVE YOU NAMI</title>
+    <style>
+        /* Additional CSS for styling the grid */
+        .block {
+            border: solid #222 1px;
+            width: 20px;
+            height: 20px;
+            margin: 2px;
+            float: left;
+        }
+        /* Centered text styling */
+        .centered-text {
+            font-size: 150px; /* Increased font size */
+            color: #ff69b4; /* Pink color */
+            text-align: center;
+            position: absolute; /* Position text absolutely */
+            top: 50%; /* Center vertically */
+            left: 50%; /* Center horizontally */
+            transform: translate(-50%, -50%); /* Center alignment */
+            z-index: 2; /* Ensure text is in front of blocks */
+        }
+    </style>
+    <script>
+        onload = function () {
+            var d = document;
+            
+            // Function to animate feed-in effect
+            function feedin(feed, speed) {
+                var filter = 0;
+                feed.style.opacity = 0;
+                feed.style.MozOpacity = 0;
+                var timer = setInterval(function () {
+                    filter++;
+                    feed.style.opacity = (filter / 10);
+                    feed.style.MozOpacity = (filter / 10);
+                    if (filter == 10) {
+                        clearInterval(timer);
+                    }
+                }, speed);
+            }
+            
+            // Indices for "I LOVE YOU" and "NAMI"
+            var str = [
+                // "I LOVE YOU" indices
+                [36, 37, 38, 72, 107, 142, 176, 177, 178],
+                [41, 76, 111, 146, 181, 182, 183],
+                [185, 150, 115, 80, 45, 46, 47, 82, 117, 152, 187],
+                [186, 49, 84, 119, 154, 190],
+                [156, 121, 86, 51, 53, 54, 55, 88, 123, 158, 193, 124, 125, 194, 195],
+                [58, 93, 128, 129, 130, 95, 60, 164, 199],
+                [202, 167, 132, 97, 62, 63, 64, 99, 134, 169, 204],
+                [203, 66, 101, 136, 171, 206, 207, 208, 173, 138, 103, 68],
+            ];
+            
+            // Create grid of blocks
+            for (var i = 0; i < 245; i++) {
+                var box = d.createElement('div');
+                box.className = 'block';
+                if (i % 35 === 0) {
+                    box.style.clear = 'both';
+                }
+                d.body.appendChild(box);
+            }
+            
+            // Animate the characters
+            var mess = d.querySelectorAll('.block');
+            var i = 0, j = 0;
+            var timer = setInterval(function () {
+                if (i >= str.length) {
+                    clearInterval(timer);
+                    return;
+                }
+                if (j >= str[i].length) {
+                    i++;
+                    j = 0;
+                    return;
+                }
+                feedin(mess[str[i][j]], 25);
+                mess[str[i][j]].style.background = '#F39';
+                j++;
+            }, 50);
+        }
+    </script>
+</head>
+<body>
+    <div class="centered-text">
+        NAMI
+    </div>
+</body>
+</html>
